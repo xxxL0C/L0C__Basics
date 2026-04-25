@@ -3,10 +3,20 @@
 Attribute / Serialization / Type Extensions  
 `ver 0.1.0 — Draft`
 
+---
+
 ## 概要
 
 本パッケージは Unity 標準には存在しない、または不足している属性・シリアライズ可能な型・型ラッパーを UPM (Unity Package Manager) パッケージとして提供する。  
  Inspector 拡張、バリデーション、シリアライズの痒いところに手が届く実装をコードなしで使えることを目的とする。
+
+## インストール (UPM)
+
+「Package Manager」→「Add package from git URL」にて、下記URLをコピー&ペースト
+
+```plaintext
+https://github.com/xxxL0C/L0C__ExBasics.git?path=Assets/XXXL0C/ExBasics
+```
 
 ### 構成カテゴリ
 
@@ -29,11 +39,7 @@ Attribute / Serialization / Type Extensions
 すべての属性は `PropertyAttribute` を継承し、 Inspector 上で動作する。  
 `PropertyDrawer` はエディタースクリプトとして `Editor/` フォルダに配置する。
 
----
-
 ### 2-1. 表示・レイアウト系
-
----
 
 #### `[Label]`
 
@@ -55,8 +61,6 @@ Attribute / Serialization / Type Extensions
 [Label("移動速度 (m/s)")]
 public float moveSpeed = 5f;
 ```
-
----
 
 #### `[Prefix]` / `[Suffix]`
 
@@ -82,8 +86,6 @@ public float respawnDelay = 3f;
 [Prefix("$")]
 public int price = 100;
 ```
-
----
 
 #### `[Foldout]`
 
@@ -115,11 +117,7 @@ public int maxHp;
 > **備考**  
 > グループの区切りは連続する同名属性の塊で判定する。異なるグループが交互に並ぶ場合は動作が不定になるため、同じグループは連続して定義すること。
 
----
-
 ### 2-2. 入力制御・バリデーション系
-
----
 
 #### `[ReadOnlyInPlayMode]`
 
@@ -140,8 +138,6 @@ public float currentHp;
 
 > **備考**  
 > エディター上では通常通り編集可能。実行中にグレーアウト表示される。
-
----
 
 #### `[Required]`
 
@@ -166,8 +162,6 @@ public Animator playerAnimator;
 
 > **備考**  
 > ビルドには影響しない。エディター上の視覚的な警告のみ。
-
----
 
 #### `[ShowIf]` / `[HideIf]`
 
@@ -197,8 +191,6 @@ public float airControl;
 
 private bool IsGrounded() => controller.isGrounded;
 ```
-
----
 
 #### `[OnValueChanged]`
 
@@ -230,11 +222,7 @@ private void OnRadiusChanged()
 > コールバックはエディター上の変更時のみ発火する。  
 > 実行時の値変更には反応しない。
 
----
-
 ### 2-3. Range・スライダー系
-
----
 
 #### `[SteppedRange]`
 
@@ -264,8 +252,6 @@ public float volume;
 [SteppedRange(0, 100, 5)]
 public int score;
 ```
-
----
 
 #### `[SteppedMinMaxSlider]`
 
@@ -301,11 +287,7 @@ public FloatRange spawnInterval;
 > 対象フィールドは `Vector2` フィールド、または `min` / `max` という名前の `float` フィールドを持つ `struct` / `class` であること。  
 > `FloatRange` 型を標準同梱する予定。
 
----
-
 ### 2-4. 参照・選択系
-
----
 
 #### `[SceneName]`
 
@@ -329,8 +311,6 @@ SceneManager.LoadScene(nextScene);
 
 > **備考**  
 > ドロップダウンには `Build Settings` に追加されているシーンのみ表示される。
-
----
 
 #### `[TypeFilter]`
 
@@ -360,8 +340,6 @@ public IAttackBehavior attackBehavior;
 > **備考**  
 > `SerializeReference` と必ずセットで使用すること。`SerializeField` では動作しない。
 
----
-
 #### `[InlineEditor]`
 
 ```csharp
@@ -383,11 +361,7 @@ SO を細かく分割しつつ、 Inspector の行き来を減らせる。
 public EnemyStats enemyStats;
 ```
 
----
-
 ### 2-5. ボタン系
-
----
 
 #### `[Button]`
 
@@ -419,11 +393,9 @@ private void AutoSetupReferences() { ... }
 
 ---
 
-## 3. 型 (Types)
+## 型 (Types)
 
 すべての型は `[Serializable]` を持ち、Unity の Inspector 上で表示・編集が可能。
-
----
 
 #### `SerializableDictionary<TKey, TValue>`
 
@@ -449,8 +421,6 @@ public SerializableDictionary<EnemyType, GameObject> enemyPrefabs;
 
 > **備考**  
 > キーの重複はシリアライズ時に後勝ちで解決する。実行時は通常の `Dictionary` として使用可能。
-
----
 
 #### `EnumIndexedList<TEnum, TValue>`
 
@@ -482,8 +452,6 @@ sprite = stateSprites[CharacterState.Run];
 > Enum の要素数と List のサイズは常に同期される。  
 > Enum に要素を追加した場合、既存データに `null` / `default` が自動補完される。
 
----
-
 #### `Optional<T>`
 
 ```csharp
@@ -510,8 +478,6 @@ int hp = overrideMaxHp.HasValue
 > `HasValue` が `false` のとき `Value` へのアクセスは `InvalidOperationException` を投げる。  
 > null チェックに `HasValue` を必ず使うこと。
 
----
-
 #### `SerializableType`
 
 ```csharp
@@ -537,41 +503,7 @@ var instance = Activator.CreateInstance(t);
 
 ---
 
-## 4. 命名規則・実装方針
-
-### 名前空間
-
-| 種別                                | 名前空間                 |
-| ----------------------------------- | ------------------------ |
-| ランタイム用（属性定義・型）        | `XXXL0C.ExBasics`        |
-| エディター用（PropertyDrawer など） | `XXXL0C.ExBasics.Editor` |
-
-### フォルダ構成
-
-```plaintext
-Assets/
-└ XXXL0C/
-  └ ExBasics/
-    ├ Runtime/
-    │ ├ Attributes/   # 属性クラス
-    │ └ Types/        # シリアライズ可能な型
-    ├ Editor/
-    │ ├ Drawers/      # PropertyDrawer
-    │ └ Utilities/    # エディターユーティリティ
-    └ Tests/
-      └ EditMode/     # エディターテスト
-```
-
-### 実装上の注意
-
-- `PropertyAttribute` クラスは `Runtime/` に配置し、エディタービルドに含めない
-- `PropertyDrawer` は必ず `Editor/` に配置する
-- UI Toolkit 実装 (`CreatePropertyGUI`) と IMGUI 実装 (`OnGUI`) の両方を提供する（Unity 2022.3 対応）
-- 型クラスは `[System.Serializable]` を必ず付与する
-
----
-
-## 5. 検討中・スコープ外
+## 検討中・スコープ外
 
 | 機能                             | ステータス                   | 理由・メモ                                  |
 | -------------------------------- | ---------------------------- | ------------------------------------------- |
