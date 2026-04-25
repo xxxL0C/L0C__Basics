@@ -117,3 +117,5 @@ InitTestScene*.unity*
 /[Aa]ssets/DefaultVolumeProfile.asset.meta
 /[Aa]ssets/UniversalRenderPipelineGlobalSettings.asset
 /[Aa]ssets/UniversalRenderPipelineGlobalSettings.asset.meta
+*.unity
+*.unity.meta
