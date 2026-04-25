@@ -1,7 +1,7 @@
 # L0C\_\_ExBasics
 
 Attribute / Serialization / Type Extensions  
-`ver 0.1.0 — Draft`
+`ver 1.0.0`
 
 ---
 
