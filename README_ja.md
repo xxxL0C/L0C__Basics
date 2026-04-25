@@ -1,38 +1,53 @@
+---
+title: L0C__ExBasics
+---
+
 # L0C\_\_ExBasics
 
-Attribute / Serialization / Type Extensions  
-`ver 1.0.0`
+属性/型/シリアライズ拡張「**L0C\_\_ExBasics**」  
+v1.0.0
 
 ---
 
-日本語 / English
+[**日本語**](README_ja.md) / [**English**](README.md)
+
+## 目次
+
+1. [概要](#概要)
+  1. [動作環境](#動作環境)
+2. [インストール](#インストール)
+  1. [UnityPackage](#unitypackage)
+  2. [Package Manager](#package-manager)
+3. [属性 (Attributes)](#属性-attributes)
+4. [型 (Types)](#型-types)
+5. [検討中・スコープ外](#検討中スコープ外)
 
 ---
 
 ## 概要
 
-本パッケージは Unity 標準には存在しない、または不足している属性・シリアライズ可能な型・型ラッパーを UPM (Unity Package Manager) パッケージとして提供する。  
- Inspector 拡張、バリデーション、シリアライズの痒いところに手が届く実装をコードなしで使えることを目的とする。
-
-### 構成カテゴリ
-
-- **属性 (Attributes)** — `PropertyAttribute` を継承した Inspector 拡張
-- **型 (Types)** — シリアライズ可能なジェネリック型・ラッパー型
+「L0C\_\_ExBasics」は Unity 標準には存在しない、または不足している属性・シリアライズ可能な型・型ラッパーを提供する UPM (Unity Package Manager) パッケージです。  
+Inspector 拡張、バリデーション、シリアライズの痒いところに手が届く実装をコードなしで使えることを目的としています。
 
 ### 動作環境
 
-| 項目                         | 内容                                         |
-| ---------------------------- | -------------------------------------------- |
-| Unity バージョン             | Unity 2022.3 LTS 以上                        |
-| スクリプティングバックエンド | Mono / IL2CPP 両対応                         |
-| 依存パッケージ               | なし（Unity 標準 API のみ使用）              |
-| 名前空間                     | `XXXL0C.ExBasics` / `XXXL0C.ExBasics.Editor` |
+| 項目 | 内容 |
+| - | - |
+| Unity バージョン | Unity 2022.3 LTS 以上 |
+| スクリプティングバックエンド | Mono / IL2CPP 両対応 |
+| 依存パッケージ | なし（Unity 標準 API のみ使用） |
+| 名前空間 | `XXXL0C.ExBasics` / `XXXL0C.ExBasics.Editor` |
 
 ## インストール
 
+### UnityPackage
+
+Releasesから最新の `L0C__ExBasics_vX-X-X.unitypackage` をダウンロードし、  
+Unityエディタにインポートしてください。
+
 ### Package Manager
 
-`Add package from git URL` にて、下記URLをコピー&ペースト
+`Add package from git URL` にて、下記URLをコピー&ペーストしてください。
 
 ```plaintext
 https://github.com/xxxL0C/L0C__ExBasics.git?path=Assets/XXXL0C/ExBasics
@@ -40,12 +55,12 @@ https://github.com/xxxL0C/L0C__ExBasics.git?path=Assets/XXXL0C/ExBasics
 
 ---
 
-## 属性 / Attributes
+## 属性 (Attributes)
 
 すべての属性は `PropertyAttribute` を継承し、 Inspector 上で動作する。  
 `PropertyDrawer` はエディタースクリプトとして `Editor/` フォルダに配置する。
 
-### 2-1. 表示・レイアウト系
+### 表示・レイアウト系
 
 #### `[Label]`
 
@@ -123,7 +138,7 @@ public int maxHp;
 > **備考**  
 > グループの区切りは連続する同名属性の塊で判定する。異なるグループが交互に並ぶ場合は動作が不定になるため、同じグループは連続して定義すること。
 
-### 2-2. 入力制御・バリデーション系
+### 入力制御・バリデーション系
 
 #### `[ReadOnlyInPlayMode]`
 
@@ -228,7 +243,7 @@ private void OnRadiusChanged()
 > コールバックはエディター上の変更時のみ発火する。  
 > 実行時の値変更には反応しない。
 
-### 2-3. Range・スライダー系
+### Range・スライダー系
 
 #### `[SteppedRange]`
 
@@ -293,7 +308,7 @@ public FloatRange spawnInterval;
 > 対象フィールドは `Vector2` フィールド、または `min` / `max` という名前の `float` フィールドを持つ `struct` / `class` であること。  
 > `FloatRange` 型を標準同梱する予定。
 
-### 2-4. 参照・選択系
+### 参照・選択系
 
 #### `[SceneName]`
 
@@ -367,7 +382,7 @@ SO を細かく分割しつつ、 Inspector の行き来を減らせる。
 public EnemyStats enemyStats;
 ```
 
-### 2-5. ボタン系
+### ボタン系
 
 #### `[Button]`
 

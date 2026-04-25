@@ -4,8 +4,8 @@
     {
       "src": [
         {
-          "src": "../",
-          "files": ["XXXL0C.Exts.csproj"]
+          "src": "../../",
+          "files": ["XXXL0C.ExBasics.csproj"]
         }
       ],
       "output": "api"
@@ -15,7 +15,7 @@
     "content": [
       {
         "files": ["**/*.{md,yml}"],
-        "exclude": ["_site/**"]
+        "exclude": ["../_site/**"]
       }
     ],
     "resource": [
@@ -23,11 +23,11 @@
         "files": ["images/**"]
       }
     ],
-    "output": "_site",
+    "output": "../_site/en",
     "template": ["default", "modern"],
     "globalMetadata": {
-      "_appName": "L0C__EXTS",
-      "_appTitle": "L0C__EXTS",
+      "_appName": "L0C__ExBasics",
+      "_appTitle": "L0C__ExBasics",
       "_enableSearch": true,
       "pdf": true
     }
