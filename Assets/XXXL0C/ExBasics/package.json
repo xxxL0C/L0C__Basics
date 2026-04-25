@@ -1,7 +1,7 @@
 {
-  "name": "com.xxxl0c.extensions",
+  "name": "com.xxxl0c.exbasics",
   "version": "0.1.0",
-  "displayName": "L0C__EXTS",
+  "displayName": "L0C__ExBasics",
   "description": "A collection of attributes and type extensions for Unity.",
   "unity": "6000.3",
   "keywords": [
