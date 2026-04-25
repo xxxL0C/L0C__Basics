@@ -42,6 +42,8 @@
 # Visual Studio cache directory
 .vs/
 .vscode/
+.claude/
+CLAUDE.md
 
 # Gradle cache directory
 .gradle/
@@ -119,3 +121,4 @@ InitTestScene*.unity*
 /[Aa]ssets/UniversalRenderPipelineGlobalSettings.asset.meta
 *.unity
 *.unity.meta
+L0C__EXTS.slnx
