@@ -41,6 +41,7 @@
 
 # Visual Studio cache directory
 .vs/
+.vscode/
 
 # Gradle cache directory
 .gradle/
@@ -51,6 +52,7 @@ ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
 *.tmp
 *.user
@@ -105,3 +107,9 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+/[Aa]ssets/Scenes/
+/[Aa]ssets/Scenes.meta
+/[Aa]ssets/InputSystem_Actions.inputactions
+/[Aa]ssets/InputSystem_Actions.inputactions.meta
+/[Aa]ssets/Settings/
+/[Aa]ssets/Settings.meta
