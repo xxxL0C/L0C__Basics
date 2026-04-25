@@ -1,7 +1,9 @@
 {
-    "name": "XXXL0C.Exts",
-    "rootNamespace": "XXXL0C.Exts",
-    "references": [],
+    "name": "XXXL0C.ExBasics.Editor",
+    "rootNamespace": "XXXL0C.ExBasics.Editor",
+    "references": [
+        "XXXL0C.ExBasics"
+    ],
     "includePlatforms": [
         "Editor"
     ],

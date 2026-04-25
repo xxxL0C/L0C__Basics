@@ -1,0 +1,6 @@
+- name: はじめに
+  items:
+    - name: L0C__EXTSとは
+      guid: JP_About
+    - name: スタートガイド
+      guid: JP_GetStart
