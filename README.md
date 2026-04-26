@@ -1,129 +1,146 @@
 # L0C\_\_ExBasics
 
-Attribute / Serialization / Type Extensions  
-`ver 1.0.0`
+Attributes / Types / Serialization Extensions  
+for Unity - v1.0.0
+
+**Documents**
 
 ---
 
-日本語 / English
+> [!NOTE]
+> [**日本語READMEはこちら**](README_ja.md)  
 
----
+## Overview
 
-## 概要
+**L0C\_\_ExBasics** is a library that provides Inspector properties and type extensions for Unity.  
+Its goal is to provide __“implementations for those hard-to-reach needs.”__
 
-本パッケージは Unity 標準には存在しない、または不足している属性・シリアライズ可能な型・型ラッパーを UPM (Unity Package Manager) パッケージとして提供する。  
- Inspector 拡張、バリデーション、シリアライズの痒いところに手が届く実装をコードなしで使えることを目的とする。
+### System Requirements
 
-### 構成カテゴリ
+- Unity version : >= 2022.3 LTS
+- Scripting Backend : Both (Mono / IL2CPP)
+- Required Packages : None (Only use Unity's built-in APIs)
 
-- **属性 (Attributes)** — `PropertyAttribute` を継承した Inspector 拡張
-- **型 (Types)** — シリアライズ可能なジェネリック型・ラッパー型
+### Namespaces
 
-### 動作環境
+- Runtime: `XXXL0C.ExBasics`
+- Editor: `XXXL0C.ExBasics.Editor`
 
-| 項目                         | 内容                                         |
-| ---------------------------- | -------------------------------------------- |
-| Unity バージョン             | Unity 2022.3 LTS 以上                        |
-| スクリプティングバックエンド | Mono / IL2CPP 両対応                         |
-| 依存パッケージ               | なし（Unity 標準 API のみ使用）              |
-| 名前空間                     | `XXXL0C.ExBasics` / `XXXL0C.ExBasics.Editor` |
+## Installation
 
-## インストール
+### UnityPackage
+
+Download the latest `L0C__ExBasics_vX-X-X.unitypackage` from the Releases,  
+and import it into the Unity Editor.
 
 ### Package Manager
 
-`Add package from git URL` にて、下記URLをコピー&ペースト
+copy and paste the URL below in `Add package from git URL` .
 
-```plaintext
+```
 https://github.com/xxxL0C/L0C__ExBasics.git?path=Assets/XXXL0C/ExBasics
 ```
 
 ---
 
-## 属性 / Attributes
+## Attributes
 
-すべての属性は `PropertyAttribute` を継承し、 Inspector 上で動作する。  
-`PropertyDrawer` はエディタースクリプトとして `Editor/` フォルダに配置する。
+All attributes inherit from `PropertyAttribute` and work in the Inspector.
 
-### 2-1. 表示・レイアウト系
+### Display / Layouts
 
-#### `[Label]`
+#### `[Label(name)]`
 
-```csharp
-[Label(string displayName)]
-```
+Overrides field display name in the Inspector to any text.
 
-**概要**  
-フィールドの Inspector 上の表示名を任意の文字列に上書きする。  
-変数名の命名規則に縛られず、日本語ラベルや長い説明文も表示できる。
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `text` | `string` | ○ | \- | String to display in the Inspector. Hide label for `string.Empty` / `""` |
 
-| パラメータ    | 説明                             |
-| ------------- | -------------------------------- |
-| `displayName` | Inspector に表示するラベル文字列 |
-
-**使用例**
+**Examples**
 
 ```csharp
-[Label("移動速度 (m/s)")]
+[Label("Movement Speed (m\u002fs)")]
 public float moveSpeed = 5f;
 ```
 
-#### `[Prefix]` / `[Suffix]`
+#### `[Prefix(text)]` / `[Suffix(text)]`
 
-```csharp
-[Prefix(string text)]
-[Suffix(string text)]
-```
+Displays the prefix / suffix alongside the input field.  
+Mainly used to add units to numeric fields.
 
-**概要**  
-フィールドの入力欄の前後に単位や説明テキストをラベル表示する。  
-数値フィールドに単位を付与するのが主な用途。
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `text` | `string` | ○ | \- | Prefix/suffix to display |
 
-| パラメータ | 説明                                        |
-| ---------- | ------------------------------------------- |
-| `text`     | 表示するプレフィックス / サフィックス文字列 |
-
-**使用例**
+**Examples**
 
 ```csharp
 [Suffix("sec")]
 public float respawnDelay = 3f;
 
-[Prefix("$")]
-public int price = 100;
+[Prefix("x")]
+public int multiplier = 10;
 ```
 
-#### `[Foldout]`
+#### `[Foldout(name, expanded)]`
+
+Groups fields with the same `name` into a collapsible group in the Inspector.  
+Recommended for medium-sized groups — stronger than `[Header]` but not requiring the nesting of `[Serializable]`.
+
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `name` | `string` | ○ | \- | Group Name |
+| `expanded` | `bool` | \- | `true` | Initial expansion state. Default: `true` |
+
+**Examples**
 
 ```csharp
-[Foldout(string groupName, bool defaultExpanded = true)]
-```
-
-**概要**  
-同じ `groupName` を持つフィールドを Inspector 上でひとつの折りたたみグループにまとめる。  
-`[Header]` より強く、`[Serializable]` でネストするほどでもない中規模のグループ整理に使う。
-
-| パラメータ        | 説明                                                 |
-| ----------------- | ---------------------------------------------------- |
-| `groupName`       | グループ名（同名のフィールドが同一グループに属する） |
-| `defaultExpanded` | 初期展開状態。省略時は `true`                        |
-
-**使用例**
-
-```csharp
-[Foldout("移動設定")]
+[Foldout("Movement Settings")]
 public float walkSpeed;
-[Foldout("移動設定")]
+[Foldout("Movement Settings")]
 public float runSpeed;
 
-[Foldout("戦闘設定")]
+[Foldout("Battle Settings")]
 public int maxHp;
 ```
 
-> **備考**  
-> グループの区切りは連続する同名属性の塊で判定する。異なるグループが交互に並ぶ場合は動作が不定になるため、同じグループは連続して定義すること。
+> [!WARNING]
+> Groups are identified by consecutive blocks of attributes with the same name.  
+> Since behavior becomes undefined when different groups alternate, define groups of the same type consecutively.
 
-### 2-2. 入力制御・バリデーション系
+#### `[Button(label, mode)]`
+
+```csharp
+[Button(string label = null, ButtonMode mode = ButtonMode.Always)]
+```
+
+**Summary**  
+Displays method buttons in Inspector.  
+Provides one-click execution for debugging and set-up processes directly in the editor.
+
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `label` | `string` | \- | Method name | Button's display name. |
+| `mode` | `ButtonMode` | \- | `ButtonMode.Always` | Run mode restrictions. |
+
+**Examples**
+
+```csharp
+[Button("Initialize Data")]
+private void ResetData() { ... }
+
+[Button(mode: ButtonMode.EditorOnly)]
+private void AutoSetupReferences() { ... }
+```
+
+> [!WARNING]
+> Only assign to methods; not to fields.  
+> Does not support methods with args.
+
+---
+
+### Input / Validation
 
 #### `[ReadOnlyInPlayMode]`
 
@@ -131,60 +148,49 @@ public int maxHp;
 [ReadOnlyInPlayMode]
 ```
 
-**概要**  
-プレイモード中のみフィールドを Inspector 上で編集不可にする。  
-実行時に意図せず値を変更することを防ぎ、デバッグ観察用フィールドの誤操作を抑止する。
+**Summary**  
+Disables field editing in the Inspector when in Play mode.  
+Prevents value changes unintentionally at runtime and curbs accidental field manipulation while debugging.
 
-**使用例**
+**Examples**
 
 ```csharp
 [ReadOnlyInPlayMode]
 public float currentHp;
 ```
 
-> **備考**  
-> エディター上では通常通り編集可能。実行中にグレーアウト表示される。
+> [!NOTE]
+> You can edit it as usual in the editor. When running, it grays out.
 
-#### `[Required]`
+#### `[Required(message)]`
 
-```csharp
-[Required(string message = null)]
-```
+Show an alert when a reference field is `null`.  
+Detect missing assignment issues in the editor stage.
 
-**概要**  
-参照型フィールドが `null` のとき、 Inspector にエラーボックスを表示する。  
-アサインし忘れ系のバグをエディター段階で検出する。
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `message` | `string` | \- | `"This field cannot be Null."` | Message to display in the alert box. |
 
-| パラメータ | 説明                                                                         |
-| ---------- | ---------------------------------------------------------------------------- |
-| `message`  | エラーボックスに表示するメッセージ。<br />省略時はデフォルトメッセージを表示 |
-
-**使用例**
+**Examples**
 
 ```csharp
-[Required("PlayerAnimator をアサインしてください")]
+[Required("Player Animator is Required.")]
 public Animator playerAnimator;
 ```
 
-> **備考**  
-> ビルドには影響しない。エディター上の視覚的な警告のみ。
+> [!NOTE]
+> Editorside visual warnings only; does not affect the build.
 
-#### `[ShowIf]` / `[HideIf]`
+#### `[ShowIf(condition)]` / `[HideIf(condition)]`
 
-```csharp
-[ShowIf(string conditionMember)]
-[HideIf(string conditionMember)]
-```
+Dynamically show/hide the field by checking a `bool` value in another field, or an argument-free method's result.  
+Effective for keeping components with many conditions cleaner.
 
-**概要**  
-別フィールドの `bool` 値またはパラメータなしメソッドの戻り値を参照して、フィールドを動的に表示 / 非表示にする。  
-条件分岐の多いコンポーネントをすっきり見せるのに効果的。
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `condition` | `string` | ○ | \- | Name of the target `bool` field or method |
 
-| パラメータ        | 説明                                                    |
-| ----------------- | ------------------------------------------------------- |
-| `conditionMember` | 参照する `bool` フィールド名 またはメソッド名（文字列） |
-
-**使用例**
+**Examples**
 
 ```csharp
 public bool useCustomSpeed;
@@ -198,21 +204,16 @@ public float airControl;
 private bool IsGrounded() => controller.isGrounded;
 ```
 
-#### `[OnValueChanged]`
+#### `[OnValueChanged(callback)]`
 
-```csharp
-[OnValueChanged(string methodName)]
-```
+Automatically call the specified method on field value changes.  
+Used for validation, preview updates, and dependency recalculation.
 
-**概要**  
- Inspector 上でフィールドの値が変更された際、指定したメソッドを自動コールバックする。  
-バリデーション・プレビュー更新・依存値の再計算などに使う。
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `callback` | `string` | ○ | \- | Callback method (No args; returns `void`) |
 
-| パラメータ   | 説明                                                        |
-| ------------ | ----------------------------------------------------------- |
-| `methodName` | コールバックするメソッド名（パラメータなし・戻り値 `void`） |
-
-**使用例**
+**Examples**
 
 ```csharp
 [OnValueChanged("OnRadiusChanged")]
@@ -224,58 +225,48 @@ private void OnRadiusChanged()
 }
 ```
 
-> **備考**  
-> コールバックはエディター上の変更時のみ発火する。  
-> 実行時の値変更には反応しない。
+> [!NOTE]
+> The callback is only triggered in the editor.  
+> It doesn't respond during runtime.
 
-### 2-3. Range・スライダー系
+### Range / Slider Controls
 
 #### `[SteppedRange]`
 
-```csharp
-[SteppedRange(float min, float max, float step)]
-```
+Extended attribute for Unity's built-in `[Range]` with step size.  
+Snaps slider values to multiples of specified steps.  
+For use in cases where only discrete values like 0.5 or 5 are allowed.
 
-**概要**  
-Unity 標準の `[Range]` にステップ（刻み幅）を追加した属性。  
-スライダーの値が指定ステップの倍数にスナップされる。  
-0.5 刻み・5 刻みなど離散的な値のみ許可したい場合に使う。
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `min` | `float` | ○ | \- | Minimum Value |
+| `max` | `float` | ○ | \- | Maximum Value |
+| `step` | `float` | \- | `0` | Step Interval |
 
-| パラメータ | 説明               |
-| ---------- | ------------------ |
-| `min`      | スライダーの最小値 |
-| `max`      | スライダーの最大値 |
-| `step`     | スナップする刻み幅 |
-
-**使用例**
+**Examples**
 
 ```csharp
-// 0〜10 の範囲を 0.5 刻みで設定
+// Set from 0 to 10 in 0.5 increments
 [SteppedRange(0f, 10f, 0.5f)]
 public float volume;
 
-// 0〜100 を 5 刻みで設定
+// Set from 0 to 100 in 5 increments
 [SteppedRange(0, 100, 5)]
 public int score;
 ```
 
 #### `[SteppedMinMaxSlider]`
 
-```csharp
-[SteppedMinMaxSlider(float min, float max, float step)]
-```
+Attrribute for controlling both `min` and `max` with a single range slider, with adjustable step size.  
+Specifically designed for “step-based range settings” like spawn count ranges and random wait times.
 
-**概要**  
-`min` / `max` の 2 フィールドをひとつのレンジスライダーで操作でき、かつステップ刻みを指定できる属性。  
-スポーン数の範囲・ランダム待機時間など「ステップ付き範囲指定」に特化している。
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `min` | `float` | ○ | \- | Minimum Value |
+| `max` | `float` | ○ | \- | Maximum Value |
+| `step` | `float` | \- | `0` | Step Interval |
 
-| パラメータ | 説明               |
-| ---------- | ------------------ |
-| `min`      | スライダーの下限   |
-| `max`      | スライダーの上限   |
-| `step`     | スナップする刻み幅 |
-
-**使用例**
+**Examples**
 
 ```csharp
 [System.Serializable]
@@ -289,51 +280,44 @@ public struct FloatRange
 public FloatRange spawnInterval;
 ```
 
-> **備考**  
-> 対象フィールドは `Vector2` フィールド、または `min` / `max` という名前の `float` フィールドを持つ `struct` / `class` であること。  
-> `FloatRange` 型を標準同梱する予定。
+> [!CAUTION]
+> Target must be the `Vector2` field, or a `struct` / `class` that has `float` fields named `min` & `max`.
 
-### 2-4. 参照・選択系
+### Reference / Selection
 
 #### `[SceneName]`
 
-```csharp
-[SceneName]
-```
+Show a dropdown of the scene list from the build settings.  
+This ensures the `SceneManager.LoadScene()` string is set correctly and safe, by preventing hand-typing errors.
 
-**概要**  
-`string` 型フィールドに、ビルド設定に登録されているシーン一覧のドロップダウンを表示する。  
-文字列の手打ちによるタイポを防ぎ、`SceneManager.LoadScene()` 用の文字列を安全に設定できる。
-
-**使用例**
+**Examples**
 
 ```csharp
 [SceneName]
 public string nextScene;
 
-// 使用例
 SceneManager.LoadScene(nextScene);
 ```
 
-> **備考**  
-> ドロップダウンには `Build Settings` に追加されているシーンのみ表示される。
+> [!IMPORTANT]
+> In dropdown only includes the scenes listed in `Build Settings`.
 
-#### `[TypeFilter]`
+#### `[TypeFilter(target)]`
 
 ```csharp
-[TypeFilter(Type baseType)]
+[TypeFilter(Type target)]
 ```
 
-**概要**  
-`[SerializeReference]` と組み合わせて使う属性。  
-インターフェース・抽象クラス型のフィールドに「どの具象型を使うか」を選べるドロップダウンを表示する。  
-ポリモーフィックなデータ設計を Inspector 上で扱えるようにする。
+**Summary**  
+Attribute used with `[SerializeReference]`.  
+Shows a dropdown to select a concrete type to use for fields of interface / abstract class.  
+Enables handling of polymorphic designs in the Inspector.
 
-| パラメータ | 説明                                             |
-| ---------- | ------------------------------------------------ |
-| `baseType` | 絞り込み対象の基底クラスまたはインターフェース型 |
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `target` | `Type` | ○ | \- | Base Class / Interface for constraint |
 
-**使用例**
+**Examples**
 
 ```csharp
 public interface IAttackBehavior { }
@@ -343,65 +327,29 @@ public interface IAttackBehavior { }
 public IAttackBehavior attackBehavior;
 ```
 
-> **備考**  
-> `SerializeReference` と必ずセットで使用すること。`SerializeField` では動作しない。
+> [!CAUTION]
+> Be sure to use with `SerializeReference`.  
+> Does not work with `SerializeField`.
 
-#### `[InlineEditor]`
+#### `[InlineEditor(showButton)]`
 
-```csharp
-[InlineEditor(bool showOpenButton = true)]
-```
+Inline editing of reference-type fields, such as `ScriptableObject`, without switching assets.  
+Minimizes Inspector switching for granular SO management.
 
-**概要**  
-`ScriptableObject` などの参照型フィールドを、アセットを切り替えずにインライン展開して直接編集できる属性。  
-SO を細かく分割しつつ、 Inspector の行き来を減らせる。
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `showButton` | `bool` | \- | `true` | Whether to show button to open asset in separate window. |
 
-| パラメータ       | 説明                                                                  |
-| ---------------- | --------------------------------------------------------------------- |
-| `showOpenButton` | アセットを別ウィンドウで開くボタンを表示するか。<br />省略時は `true` |
-
-**使用例**
+**Examples**
 
 ```csharp
 [InlineEditor]
 public EnemyStats enemyStats;
 ```
 
-### 2-5. ボタン系
+## Types
 
-#### `[Button]`
-
-```csharp
-[Button(string label = null, ButtonMode mode = ButtonMode.Always)]
-```
-
-**概要**  
-メソッドに付与すると Inspector にボタンとして表示される属性。  
-デバッグ処理やセットアップ処理をエディター上でワンクリック実行できる。
-
-| パラメータ | 説明                                                                         |
-| ---------- | ---------------------------------------------------------------------------- |
-| `label`    | ボタンの表示テキスト。省略時はメソッド名を使用                               |
-| `mode`     | `Always` / `EditorOnly` / `PlayModeOnly` の 3 種。実行タイミングを制限できる |
-
-**使用例**
-
-```csharp
-[Button("データを初期化")]
-private void ResetData() { ... }
-
-[Button(mode: ButtonMode.EditorOnly)]
-private void AutoSetupReferences() { ... }
-```
-
-> **備考**  
-> フィールドではなくメソッドに付与する点に注意。引数ありメソッドには対応しない。
-
----
-
-## 型 (Types)
-
-すべての型は `[Serializable]` を持ち、Unity の Inspector 上で表示・編集が可能。
+All types are marked with `[Serializable]` and can be viewed and edited in Inspector.
 
 #### `SerializableDictionary<TKey, TValue>`
 
@@ -409,24 +357,27 @@ private void AutoSetupReferences() { ... }
 public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
 ```
 
-**概要**  
-Unity の標準 `Dictionary` はシリアライズ不可だが、`ISerializationCallbackReceiver` を実装して  
-`List<TKey>` / `List<TValue>` の並列配列で内部保持することで Inspector 表示・保存を実現した `Dictionary` 継承型。
+**Summary**  
+Extend non-serializable `Dictionary`, implement `ISerializationCallbackReceiver`,  
+and store data in paired `List<TKey>` / `List<TValue>` to enable Inspector display and saving.
 
-| 型パラメータ | 説明                                                                         |
-| ------------ | ---------------------------------------------------------------------------- |
-| `TKey`       | キーの型。Unity がシリアライズ可能な型（`string`, `int`, `enum` など）を推奨 |
-| `TValue`     | 値の型。シリアライズ可能な型であれば参照型・値型どちらも可                   |
+| Parameter | Description |
+| --- | --- |
+| `TKey` | Type of key. Recommends types serializable by Unity ( `string`, `int`, `enum`, etc.) |
+| `TValue` | Type of value. Serializable types: both reference and value. |
 
-**使用例**
+**Examples**
 
 ```csharp
 public SerializableDictionary<string, int> scoreTable;
 public SerializableDictionary<EnemyType, GameObject> enemyPrefabs;
 ```
 
-> **備考**  
-> キーの重複はシリアライズ時に後勝ちで解決する。実行時は通常の `Dictionary` として使用可能。
+> [!IMPORTANT]
+> Duplicate keys are resolved last-written wins on serialization.
+
+> [!NOTE]
+> Can be used as standard `Dictionary` at runtime.
 
 #### `EnumIndexedList<TEnum, TValue>`
 
@@ -434,29 +385,32 @@ public SerializableDictionary<EnemyType, GameObject> enemyPrefabs;
 public class EnumIndexedList<TEnum, TValue> where TEnum : Enum
 ```
 
-**概要**  
-`Enum` の各値をインデックスとして使う `List` のラッパー型。  
-Inspector では Enum 名をラベルとして各要素が表示され、Enum と配列・Sprite・string などを 1:1 で紐付けたいユースケースに特化する。
+**Summary**  
+Wrapper type for a `List` using each `Enum` values as indexes.  
+Each element is displayed with Enum names as labels in the Inspector,  
+specialized for use cases requiring 1:1 mapping of Enum to Arrays, Sprite, string, etc.
 
-| 型パラメータ | 説明                                                  |
-| ------------ | ----------------------------------------------------- |
-| `TEnum`      | インデックスとして使う `Enum` 型                      |
-| `TValue`     | 各要素の値型（`Sprite`, `string`, `GameObject` など） |
+| Parameter | Description |
+| --- | --- |
+| `TEnum` | `Enum` for indexes |
+| `TValue` | Data type for the elements ( `Sprite`, `string`, `GameObject`, etc.) |
 
-**使用例**
+**Examples**
 
 ```csharp
 public enum CharacterState { Idle, Walk, Run, Attack }
 
 public EnumIndexedList<CharacterState, Sprite> stateSprites;
 
-// 使用例
+// Examples
 sprite = stateSprites[CharacterState.Run];
 ```
 
-> **備考**  
-> Enum の要素数と List のサイズは常に同期される。  
-> Enum に要素を追加した場合、既存データに `null` / `default` が自動補完される。
+> [!NOTE]
+> List size and Enum element size are synced.
+
+> [!IMPORTANT]
+> When elements are added to the Enum, `null` / `default` is auto-completed with existing data.
 
 #### `Optional<T>`
 
@@ -464,25 +418,24 @@ sprite = stateSprites[CharacterState.Run];
 public struct Optional<T>
 ```
 
-**概要**  
-シリアライズ可能な Nullable 的な型。  
-`bool hasValue` と `T value` の 2 フィールドで構成され、Inspector 上ではチェックボックス付きで表示される。  
-`int?` など `Nullable<T>` をシリアライズできない問題の実用的な代替。
+**Summary**  
+Serializable Nullable-like type.  
+Consists of two fields: `bool hasValue` and `T value`, displayed with a checkbox in the Inspector.  
+Provides a usable alternative to issues like `int?` —where `Nullable<T>` cannot be serialized.
 
-**使用例**
+**Examples**
 
 ```csharp
 public Optional<int> overrideMaxHp;
 
-// 使用例
+// Examples
 int hp = overrideMaxHp.HasValue
     ? overrideMaxHp.Value
     : defaultMaxHp;
 ```
 
-> **備考**  
-> `HasValue` が `false` のとき `Value` へのアクセスは `InvalidOperationException` を投げる。  
-> null チェックに `HasValue` を必ず使うこと。
+> [!NOTE]
+> Acccessing `Value` when `HasValue` is `false` throws `InvalidOperationException`.
 
 #### `SerializableType`
 
@@ -490,30 +443,30 @@ int hp = overrideMaxHp.HasValue
 public class SerializableType : ISerializationCallbackReceiver
 ```
 
-**概要**  
-`System.Type` はシリアライズ不可だが、アセンブリ修飾名 (`AssemblyQualifiedName`) を `string` で保持することで Inspector 上での表示・保存を実現したラッパー型。  
-`[TypeFilter]` 属性と対になる型として使う。
+**Summary**  
+Wrapper type for serialization of `System.Type`  
+– stores `AssemblyQualifiedName` via `string`, enabling display and save in Inspector.  
+Use with `[TypeFilter]` attribute.
 
-**使用例**
+**Examples**
 
 ```csharp
 public SerializableType targetType;
 
-// 使用例
+// Examples
 Type t = targetType.Type;
 var instance = Activator.CreateInstance(t);
 ```
 
-> **備考**  
-> 型の解決は `Type.GetType()` を使うため、アセンブリ変更・リネーム時はデータが失われる可能性がある。
+> [!CAUTION]
+> Types are resolved via `Type.GetType()`, and data may be lost if you modify or rename your assembly.
 
 ---
 
-## 検討中・スコープ外
+## Under review / Not scoped
 
-| 機能                             | ステータス                   | 理由・メモ                                  |
-| -------------------------------- | ---------------------------- | ------------------------------------------- |
-| `[MinMaxSlider]`（ステップなし） | `SteppedMinMaxSlider` に統合 | `step = 0` でステップなし動作にする         |
-| `SerializableHashSet<T>`         | 検討中                       | `Dictionary` と実装が近いため追加予定       |
-| `SerializableGuid`               | 検討中                       | `SerializableType` との組み合わせで需要あり |
-| `[CurveRange]`                   | スコープ外                   | Unity 標準 `AnimationCurve` で概ね対応可    |
+| Feature | Status | Reason / Note |
+| --- | --- | --- |
+| `SerializableHashSet<T>` | Under review | Planned additions due to similar `Dictionary` implementation |
+| `SerializableGuid` | Under review | May be useful combined with `SerializableType` |
+| `[CurveRange]` | Not scoped | Generally compatible with `UnityEngine.AnimationCurve` |
