@@ -2,7 +2,8 @@
     "name": "XXXL0C.ExBasics.Editor",
     "rootNamespace": "XXXL0C.ExBasics.Editor",
     "references": [
-        "XXXL0C.ExBasics"
+        "XXXL0C.ExBasics",
+        "Unity.2D.Sprite.Editor"
     ],
     "includePlatforms": [
         "Editor"
