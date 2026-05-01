@@ -1,5 +1,5 @@
 {
-  "name": "com.xxxl0c.exbasics",
+  "name": "com.xxxl0c.basics",
   "version": "1.0.0",
   "displayName": "L0C__Basics",
   "description": "A collection of attributes and type extensions for Unity.",
@@ -17,6 +17,6 @@
   "dependencies": {},
   "author": {
     "name": "xxxL0C",
-    "email": "l0c-r1t@xxxl0c.works"
+    "email": "games@xxxl0c.works"
   }
 }
